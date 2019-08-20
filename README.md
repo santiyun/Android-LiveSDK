@@ -101,7 +101,7 @@ public abstract boolean isCameraAutoFocusFaceModeSupported();
  * 设置摄像头缩放比例。
  *
  * @param factor 相机缩放比例，有效范围从 1.0 到最大缩放
- * @return 0代表方法调用成功，其他代表失败。see {@link LocalSDKConstants#FUNCTION_SUCCESS}
+ * @return true代表方法调用成功，false代表失败。
  */
 public abstract boolean setCameraZoomFactor(int factor);
 ```
@@ -197,7 +197,7 @@ void onConnectionChangedToState(int status);
  * {@link Constants#TTT_CAMERA_BACK} 代表后置摄像头<br/>
  * {@link Constants#TTT_CAMERA_EXTERNAL} 代表外置摄像头<br/>
  *
- * @return 0代表方法调用成功，其他代表失败。see {@link LocalSDKConstants#FUNCTION_SUCCESS}
+ * @return 当前摄像头的ID。
  */
 public abstract int getCameraFace();
 ```
@@ -214,4 +214,6 @@ public abstract int getCameraFace();
 public abstract int setRemoteDefaultVideoStreamType(int streamType);
 ```
 
+### API 修改
+1. 类 VideoCanvas 的名称修改为 TTTVideoCanvas。
 
