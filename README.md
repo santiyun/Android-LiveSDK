@@ -214,6 +214,3 @@ public abstract int getCameraFace();
 public abstract int setRemoteDefaultVideoStreamType(int streamType);
 ```
 
-### API 修改
-1. 类 VideoCanvas 的名称修改为 TTTVideoCanvas。
-
