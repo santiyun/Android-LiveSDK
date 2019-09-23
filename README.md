@@ -214,3 +214,82 @@ public abstract int getCameraFace();
 public abstract int setRemoteDefaultVideoStreamType(int streamType);
 ```
 
+#-------------------------------------------
+
+###2.4.0版本
+该版本于2019年09月20日发布。
+###新增功能
+
+####音频自采集功能，相关接口以及回调
+```
+/**
+ * 是否启用本地和远端音频混音后的裸数据上报
+ *
+ * @param enabled true代表启用上报，false代表禁用上报
+ */
+public abstract void enableMixAudioDataReport(boolean enabled);
+```
+
+```
+/**
+ * 设置本地音频裸数据的采样率，声道数和采样点数
+ *
+ * @param sampleRate     采样率，可设置为 8000，16000，32000，44100 或 48000
+ * @param channel        声道数，最多支持两个声道
+ * @param samplesPerCall 采样点数
+ * @return 0代表方法调用成功，其他代表失败。see {@link LocalSDKConstants#FUNCTION_SUCCESS}
+ */
+public abstract int setRecordingAudioFrameParameters(int sampleRate, int channel, int samplesPerCall);
+```
+
+```
+/**
+ * 设置远端音频裸数据的采样率，声道数和采样点数
+ *
+ * @param sampleRate     采样率，可设置为 8000，16000，32000，44100 或 48000
+ * @param channel        声道数，最多支持两个声道
+ * @param samplesPerCall 采样点数
+ * @return 0代表方法调用成功，其他代表失败。see {@link LocalSDKConstants#FUNCTION_SUCCESS}
+ */
+public abstract int setPlaybackAudioFrameParameters(int sampleRate, int channel, int samplesPerCall);
+```
+
+```
+/**
+ * 设置本地和远端音频混音裸数据的采样率，声道数和采样点数
+ *
+ * @param sampleRate     采样率，可设置为 8000，16000，32000，44100 或 48000
+ * @param channel        声道数，最多支持两个声道
+ * @param samplesPerCall 采样点数
+ * @return 0代表方法调用成功，其他代表失败。see {@link LocalSDKConstants#FUNCTION_SUCCESS}
+ */
+public abstract int setMixedAudioFrameParameters(int sampleRate, int channel, int samplesPerCall);
+```
+
+```
+/**
+ * 获取录制和播放语音混音后的数据。
+ *
+ * @param data       PCM数据
+ * @param size       PCM数据长度
+ * @param sampleRate 采样率
+ * @param channels   声道数
+ */
+byte[] onMixedAudioFrame(byte[] data, int size, int sampleRate, int channels);
+```
+
+### API变更
+1.以下回调接口，会在参数列表末尾添加 **elapsed** 参数，表示当前回调自加入房间起，到触发该回调所用的时间。<br/>
+onJoinChannelSuccess<br/>
+onUserJoined<br/>
+onFirstLocalVideoFrame<br/>
+onFirstRemoteVideoDecoded<br/>
+onFirstRemoteVideoFrame<br/>
+onFirstRemoteVideoDecoded<br/>
+onFirstRemoteVideoFrame<br/>
+
+2.以下音频裸数据回调的返回值从 **void** 变更为 **byte[]**，支持对裸数据进行二次处理，将处理完的数据返回给sdk，sdk再进行后续处理。<br/>
+onLocalAudioDataReport<br/>
+onRemoteAudioDataReport<br/>
+
+3.**ScreenRecordConfig** 类中字段 **mRecordAudioBitRate** 设置音频码率的字段去掉。添加字段 **mRecordIFrameInterval** 设置视频关键帧间隔。
