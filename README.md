@@ -1,3 +1,10 @@
+## 三体音视频SDK防止混淆配置
+ * -keep class ttt.ijk.media.**{*;}
+ * -keep class project.android.imageprocessing.**{*;}
+ * -keep class org.TTTRtc.voiceengine.**{*;}
+ * -keep class com.wushuangtech.**{*;}
+ * -dontwarn ttt.ijk.media.**
+
 ## 三体音视频SDK发版说明
 
 ### 2.4.0版本
