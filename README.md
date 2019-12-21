@@ -7,6 +7,76 @@
 
 ## 三体音视频SDK发版说明
 
+### 2.5.0版本
+该版本于2019年12月21日发布。
+
+## 类 TTTRtcEngine API 变更
+
+### API 删除
+1.**enableUplinkAccelerate** 接口已不再支持。
+
+### API 变更
+1.调整 **setPreferAudioCodec** 接口的参数取值范围。
+
+```
+/**
+ * 设置音频编码参数。
+ * <p/>
+ * 默认 SDK 使用 ISAC 格式，适用于通话场景，而在对音质需求高的直播场景，推荐使用 AAC 或 OPUS，显式调用该 API 变更。
+ * <p/>
+ * 使用注意：<br/>
+ * 1.该方法需要在 joinChannel(加入频道) 之前设置好，joinChannel 后设置不生效。<br/>
+ * 2.若使用 startRecordScreenAndSave(屏幕录制) 或 startRecordScreen(屏幕共享) API，则必须使用 AAC 。
+ * <p/>
+ *
+ * @param codecType 音频编码格式，支持的类型如下：<br/>
+ *                  {@link Constants#TTT_AUDIO_CODEC_AAC}<br/>
+ *                  {@link Constants#TTT_AUDIO_CODEC_ISAC}<br/>
+ *                  {@link Constants#TTT_AUDIO_CODEC_OPUS}<br/>
+ * @param bitrate   音频编码码率，范围如下：<br/>
+ *                  {@link Constants#TTT_AUDIO_CODEC_AAC}  码率范围48kbps ~ 128kbps<br/>
+ *                  {@link Constants#TTT_AUDIO_CODEC_ISAC} 码率范围16kbps ~ 32kbps<br/>
+ *                  {@link Constants#TTT_AUDIO_CODEC_OPUS} 码率范围16kbps ~ 128kbps<br/>
+ * @param channels  声道数，支持单声道和双声道，参数范围是1 ~ 2
+ *                  <p/>
+ * @return 0 代表方法调用成功，其他代表失败。<br/>
+ * ERROR_FUNCTION_INVOKE_ERROR -4 ：已加入频道，调用会失败。<br/>
+ * ERROR_FUNCTION_ERROR_ARGS -5 ：传递的参数有问题，比如所设置的音频编码格式、码率大小、或声道数不支持。
+ */
+public abstract int setPreferAudioCodec(int codecType, int bitrate, int channels);
+```
+
+2.调整 **startAudioMixing** 接口，增加对 **assets** 文件夹内的文件访问，调整 **cycle** 参数的取值。
+
+```
+/**
+ * 开始播放音乐文件及混音。
+ * <p/>
+ * 该 API 指定本地或在线音频文件来和麦克风采集的音频流进行混音或替换，替换是指用音频文件替换麦克风采集的音频流，并且可以选择是否让对方听到本地播放的音频，
+ * 并指定循环播放的次数。
+ * <p/>
+ * 成功调用后，当播放结束，会收到 {@link TTTRtcEngineEventHandler#onAudioMixingPlayFinish} 回调通知调用者音乐播放完毕。
+ *
+ * @param filePath 指定需要混音的本地音频文件名和文件路径。支持以下音频格式：mp3, mp4, aac, m4a, wav, flac。<br/>
+ *                 如果用户提供的目录以 /assets/ 开头，则去 assets 里面查找该文件。<br/>
+ *                 如果用户提供的目录不是以 /assets/ 开头，一律认为是在绝对路径里查找该文件。
+ * @param loopback true：只有本地可以听到混音或替换后的音频流，false：本地和对方都可以听到混音或替换后的音频流。
+ * @param replace  true：音频文件内容将会替换本地录音的音频流，false：音频文件内容将会和麦克风采集的音频流进行混音。
+ * @param cycle    指定音频文件循环播放的次数，从 1 开始，0 无效。<br/>
+ *                 正整数：循环的次数。<br/>
+ *                 -1：无限循环。
+ *                 <p/>
+ * @return 0 代表方法调用成功，其他代表失败。<br/>
+ * ERROR_FUNCTION_INVOKE_ERROR -4 ：调用失败，原因未知，请尝试重新调用。<br/>
+ * ERROR_FUNCTION_ERROR_ARGS -5 ：参数有问题。<br/>
+ * 1.可能是音乐文件路径不对或不存在。<br/>
+ * 2.循环次数错误，只能是正整数或-1。
+ */
+public abstract int startAudioMixing(String filePath, boolean loopback, boolean replace, int cycle);
+```
+
+#-------------------------------------------
+
 ### 2.4.0版本
 该版本于2019年10月24日发布。
 ## API TTTRtcEngine 接口变更
