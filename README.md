@@ -1,11 +1,104 @@
-## 三体音视频SDK防止混淆配置
+## 三体音视频 SDK 防止混淆配置
+如果 App 添加了混淆配置，在使用 SDK 时需要添加如下配置，防止 SDK 代码混淆。  
+
  * -keep class ttt.ijk.media.**{*;}
  * -keep class project.android.imageprocessing.**{*;}
  * -keep class org.TTTRtc.voiceengine.**{*;}
  * -keep class com.wushuangtech.**{*;}
  * -dontwarn ttt.ijk.media.**
 
-## 三体音视频SDK发版说明
+## 三体音视频 SDK 架构选择
+在项目下的 **build.gradle** 文件中，如果符合以下任意一种情况，则使用 **arm64-v8a** 架构的 SDK，否则请选择 **armeabi-v7a** 架构。  
+
+1. 文件中没有红框内的代码，即没有指定 so 库所使用的架构，默认会用 **arm64-v8a**。
+![](1.jpg)
+	
+2. 文件中有红框内的代码，并且指定了需要使用 **arm64-v8a** 架构。
+![](2.jpg)
+
+## 三体音视频 SDK 发版说明
+
+### 2.6.0版本
+该版本于2020年01月19日发布。
+
+## 类 TTTRtcEngine API 变更
+### API 删除
+1. 接口 **create** 删除原第三个参数 **enableChat** ，参数从4个变为3个。  
+2. 删除 **聊天功能** 相关接口，如下表：
+
+	```
+	/**
+	* 发送聊天信息
+	 */
+	public abstract int sendChatMessage(long nDstUserID, int type, String sSeqID, String sData);
+	
+	/**
+	 * 发送信令
+	 */
+	public abstract int sendSignal(long nDstUserID, String sSeqID, String sData);
+	
+	/**
+	 * 开始采集聊天语音（限制60s以内）
+	 */
+	public abstract int startRecordChatAudio();
+	
+	/**
+	 * 停止采集并且发送语音消息
+	 */
+	public abstract int stopRecordAndSendChatAudio(long nDstUserID, String sSeqID);
+	
+	/**
+	 * 取消语音采集
+	 */
+	public abstract int cancelRecordChatAudio();
+	
+	/**
+	 * 播放语音消息
+	 */
+	public abstract int startPlayChatAudioFileName(String audioPath);
+	
+	/**
+	 * 停止播放语音消息
+	 */
+	public abstract int stopPlayChatAudio();
+	
+	/**
+	 * 是否正在播放语音消息
+	 */
+	public abstract boolean isChatAudioPlaying();
+	```
+
+3. 接口 **setSignalTimeout** 返回值类型从 **void** 变为 **int** 。
+
+### API 变更
+无
+
+### API 新增
+无
+
+## API TTTRtcEngineEventHandler 回调接口变更
+### API 删除
+1. 回调接口 **onVideoStopped** 删除。
+
+
+## 问题修复
+1. 修复 SDK 在操作用户信息或用户设备信息时，有几率触发空指针异常。
+2. 修复视频编码器在某些情况下，硬编与软编都有可能开启，导致编码异常。
+3. 修复在某些机型下(nexus 6)，摄像头前后切换，分辨率不一样，导致出现黑屏问题。
+4. 修改 adjustAudioMixingSoloVolume 接口调用限制，加入频道后就可以调用，而不是开始播放伴奏后。
+5. 修复在某些分辨率和机型下，有几率出现编码花屏对问题。
+6. 修复 SDK 其他一些崩溃问题，提升稳定性。
+7. 修复 **onRemoteVideoFrameDecodedOfUid** 回调不上报的问题，使用了硬解，使用这个回调暂时必须用软解，在调用 **joinChannel(加入频道)** 接口前，调用 **forceVideoDecodeSoftware** 接口，代码如下所示。
+
+	```
+	mTTTEngine.getTTTRtcEngineExtend().forceVideoDecodeSoftware(true);
+	```
+
+## 优化
+1. 新增纯音频主播带副播跨房间PK。
+2. 优化网络传输。
+
+#-------------------------------------------
 
 ### 2.5.0版本
 该版本于2019年12月21日发布。
@@ -73,6 +166,140 @@ public abstract int setPreferAudioCodec(int codecType, int bitrate, int channels
  * 2.循环次数错误，只能是正整数或-1。
  */
 public abstract int startAudioMixing(String filePath, boolean loopback, boolean replace, int cycle);
+```
+
+3.SDK 内部不再监听 IJK 控件相关回调，拉流成功/错误。即用户不会再收到关于 IJK 的 **onJoinChannelSuccess** 或 **onError**，需要自行接收回调，接收方法如下：
+
+```
+mIjkVideoView = mTTTEngine.CreateIjkRendererView(this);
+...
+...
+...
+// 监听拉流成功的回调通知。
+mIjkVideoView.setOnRenderingStart(new IjkVideoView.OnRenderingStart() {
+    @Override
+    public void onRendering() {
+        Toast.makeText(mContext, "拉流成功", Toast.LENGTH_SHORT).show();
+    }
+});
+
+// 监听拉流中出现的异常错误或主播停止推流，终止当前的拉流。
+mIjkVideoView.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
+    @Override
+    public boolean onError(IMediaPlayer iMediaPlayer, int what, int extra) {
+        showErrorExitDialog("拉流出现错误, type-" + what);
+        return false;
+    }
+});
+```
+
+4.SDK 修改了关于 **OnInfoListener** 回调类的接口列表，将之前的 **onVolume** 和 **onH264SeiReport** 等方法分离出来，具体修改如下：
+
+```
+
+mIjkVideoView = mTTTEngine.CreateIjkRendererView(this);
+...
+...
+...
+// 以前的代码
+mIjkVideoView.setOnInfoListener(new OnInfoListener() {
+    @Override
+    public boolean onInfo(IMediaPlayer iMediaPlayer, int i, int i1) {
+        return false;
+    }
+    
+	 @Override
+    public boolean onVolume(IMediaPlayer iMediaPlayer, HashMap<Long, Double> hashMap) {
+        return false;
+    }
+            
+    @Override
+    public void onH264SeiReport(String s) {
+
+    }
+});
+
+// 现在的代码
+mIjkVideoView.setOnInfoListener(new OnInfoListener() {
+    @Override
+    public boolean onInfo(IMediaPlayer iMediaPlayer, int i, int i1) {
+        return false;
+    }
+});
+
+mIjkVideoView.setOnVoluemeReportCallBack(new OnVoluemeReportCallBack() {
+    @Override
+    public boolean onVolume(IMediaPlayer iMediaPlayer, HashMap<Long, Double> hashMap) {
+        return false;
+    }
+});
+
+mIjkVideoView.setOnVideoSeiReportCallBack(new IjkVideoView.OnVideoSeiReportCallBack() {
+    @Override
+    public void onH264SeiReport(String s) {
+
+    }
+});
+
+5.SDK 修改了关于 OnInfoListener 回调类的接口列表，将之前的 onVolume 和 onH264SeiReport 等方法分离出来，具体修改如下：
+
+```
+
+### API 新增
+
+1.IJK 拉流模块新增对下行音视频码率、帧率和延迟的统计。
+
+```
+// 4.监听拉流中的音视频下行数据统计信息，每 2 秒上报一次。
+mIjkVideoView.setOnRtmpPullDataCallBack(new OnRtmpPullDataCallBack() {
+    @Override
+    public void onPullStatusValuesReport(RtmpPullStatusBean bean) {
+    
+    }
+});
+
+public class RtmpPullStatusBean {
+	// 视频流下行帧率
+   public int mVideoFps;
+   // 视频流下行码率
+   public int mVideoBitrate;
+   // 音频流下行帧率
+   public int mAudioBitrate;
+   // 视频流下行延迟
+   public long mVideoDelay;
+   // 音频流下行延迟
+   public long mAudioDelay;
+}
+```
+
+2.RTMP 直推模块新增对上行音视频码率、帧率的统计，回调接口与加入频道相同。
+
+```
+/**
+ * 通话、直播或RTMP 直推中，本地视频流的统计信息回调。
+ * <p/>
+ * 该回调描述本地设备发送视频流的统计信息，每 2 秒触发一次。
+ *
+ * @param stats 本地视频相关的统计信息类，其中包含的信息为: <br/>
+ *              mSentBitrate：实际发送码率，单位为 Kbps。<br/>
+ *              mSentFrameRate：实际发送帧率，单位为 fps。<br/>
+ *              mVideoLossRate：视频流上行丢包率，百分比小数，范围0 ~ 1 之间，RTMP 直推中此参数为 0 。<br/>
+ *              mVideoBuffer：视频缓冲区大小，单位毫秒，RTMP 直推中此参数为 0 。<br/>
+ *              mDelay：视频流上行延迟，单位毫秒，RTMP 直推中此参数为 0 。
+ */
+void onLocalVideoStats(LocalVideoStats stats);
+
+/**
+ * 通话、直播或RTMP 直推中，本地音频流的统计信息回调。
+ * <p/>
+ * 该回调描述本地设备发送音频流的统计信息，每 2 秒触发一次。
+ *
+ * @param stats 本地音频相关的统计信息类，其中包含的信息为: <br/>
+ *              mSentBitrate：实际发送码率，单位为 Kbps。<br/>
+ *              mAudioLossRate：音频流上行丢包率，百分比小数，范围0 ~ 1 之间，RTMP 直推中此参数为 0 。<br/>
+ *              mAudioDelay：音频流上行延迟，单位毫秒，RTMP 直推中此参数为 0 。
+ */
+void onLocalAudioStats(LocalAudioStats stats);
 ```
 
 #-------------------------------------------
