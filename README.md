@@ -71,7 +71,7 @@
 3. 接口 **setSignalTimeout** 返回值类型从 **void** 变为 **int** 。
 
 ### API 变更
-无
+1. 接口 **onFirstLocalVideoFrame** 参数宽和高，从上报的**视频编码**宽和高，修改为**视频渲染**宽和高。
 
 ### API 新增
 无
