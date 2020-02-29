@@ -18,6 +18,25 @@
 
 ## 三体音视频 SDK 发版说明
 
+### 2.7.0版本
+该版本于2020年02月29日发布。
+
+## 类 TTTRtcEngine API 变更
+### API 删除
+1. 接口 **public abstract int joinChannel(String token, String channelName, long optionalUid, boolean enableChat, boolean enableSignal)** 删除。  
+
+## 问题修复  
+1. 优化外部视频源接口，视频编码器开始的时机，解决视频硬编有可能失败。  
+2. 解决一个退房间有小概率 SDK 会出现死锁，从而出现 ANR 的问题。  
+
+## 优化
+1. 优化远端视频打开时间。
+2. 优化信令重发的问题。
+3. 优化 SDK 视频解码器默认为软解模式。 
+4. 优化断网重连。
+
+#-------------------------------------------
+
 ### 2.6.0版本
 该版本于2020年01月19日发布。
 
@@ -79,7 +98,6 @@
 ## API TTTRtcEngineEventHandler 回调接口变更
 ### API 删除
 1. 回调接口 **onVideoStopped** 删除。
-
 
 ## 问题修复
 1. 修复 SDK 在操作用户信息或用户设备信息时，有几率触发空指针异常。
