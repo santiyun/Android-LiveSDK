@@ -18,6 +18,30 @@
 
 ## 三体音视频 SDK 发版说明
 
+### 2.9.5版本
+该版本于 2020.05.11 发布。
+
+**从此版本开始，SDK仅支持Android 4.3(18)以上的系统版本**
+
+## 类 TTTRtcEngine API 变更
+### API 删除
+1. 移除常量 **Constants.ERROR\_CAMERA\_OPEN\_FAILED**，请参考回调 **onCameraConnectError**。
+
+### API 变更
+1. 接口 **setVideoMixerParams** 添加质感超清功能参数 **qulityMode** ，详情请参考文档介绍。
+2. 接口 **CreateRendererView** 修改为静态方法。
+
+## 类 TTTRtcEngineEventHandler 回调 API 变更
+
+### API 新增
+1. 新增回调 **onCameraConnectError** 上报，通知 app 摄像头链接失败。
+
+## 优化
+1. 优化视频质量档位，添加640x480和960x540。
+2. 优化摄像头采集方式，增加视频流畅度。
+
+#-------------------------------------------
+
 ### 2.7.1版本
 该版本于2020年03月11日发布。
 
