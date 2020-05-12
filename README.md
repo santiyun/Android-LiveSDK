@@ -28,7 +28,7 @@
 1. 移除常量 **Constants.ERROR\_CAMERA\_OPEN\_FAILED**，请参考回调 **onCameraConnectError**。
 
 ### API 变更
-1. 接口 **setVideoMixerParams** 添加质感超清功能参数 **qulityMode** ，详情请参考文档介绍。
+1. 接口 **setVideoMixerParams** 添加智感超清功能参数 **qulityMode** ，详情请参考文档介绍。
 2. 接口 **CreateRendererView** 修改为静态方法。
 
 ## 类 TTTRtcEngineEventHandler 回调 API 变更
