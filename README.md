@@ -18,6 +18,23 @@
 
 ## 三体音视频 SDK 发版说明
 
+### 2.9.6版本
+1、修复屏幕分享需要使用aac音频格式的问题。   
+2、解决一个摄像头机型适配问题，可能会引起本地视频预览黑屏。  
+3、**Constants** 类添加摄像头链接失败错误码。  
+
+```
+/**
+ * 相机链接丢失，系统中断当前相机链接。
+ */
+public static final int ERROR_CAMERA_CONNECT_LOST = 1;
+
+/**
+ * 相机打开失败。
+ */
+public static final int ERROR_CAMERA_CONNECT_FAILED = 2;
+```
+
 ### 2.9.5版本
 该版本于 2020.05.11 发布。
 
