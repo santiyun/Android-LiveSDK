@@ -21,9 +21,9 @@
 ### 3.0.3版本
 该版本于 2020.06.20 发布。
 
-1. 添加接口 **enableVideoImproveModule** ，用于控制**视频改进模块**的启用/禁用，默认处于启用状态。
-2、添加接口 **CreateRendererTextureView** 和  **CreateRendererSurfaceView** ，用于创建频改进模块的渲染控件。
-3、调整视频档位参数，720p的推荐帧率降低至24pfs、1010p的推荐帧率降低至15fps。
+1. 添加接口 **enableVideoImproveModule** ，用于控制**视频改进模块**的启用/禁用，默认处于启用状态。  
+2. 添加接口 **CreateRendererTextureView** 和  **CreateRendererSurfaceView** ，用于创建频改进模块的渲染控件。  
+3. 调整视频档位参数。  
 
 ```
 /**
