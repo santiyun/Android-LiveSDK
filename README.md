@@ -21,9 +21,92 @@
 ### 3.0.3版本
 该版本于 2020.06.20 发布。
 
-1. 添加接口 **enableVideoImproveModule** ，用于控制**视频改进模块**的启用/禁用，默认处于启用状态。  
-2. 添加接口 **CreateRendererTextureView** 和  **CreateRendererSurfaceView** ，用于创建频改进模块的渲染控件。  
-3. 调整视频档位参数。  
+1.改进了本地视频渲染性能，添加了本地视频新的渲染流程，默认处于启用状态。添加了新的接口 **enableVideoImproveModule** ，用于控制本地视频新的渲染流程的启用/禁用，接口如下
+
+```
+/**
+ * 启用本地视频新的渲染流程
+ * <p/>
+ * 默认 SDK 启用本地视频新的渲染流程，用以提升视频渲染性能，该流程与原有的本地视频渲染流程不兼容。
+ * <p/>
+ * 使用本地视频新的渲染流程，需要通过 CreateRendererSurfaceView 和 CreateRendererTextureView 接口创建新的视频控件，而不能再用 CreateRendererView 接口创建视频控件，不然会导致视频黑屏。
+ * <p/>
+ * 使用注意：<br/>
+ * 1.仅在加入频道前调用有效，频道内调用无效。
+ *
+ * @param enabled true ：代表启用本地视频新的渲染流程(默认值)，false ：代表禁用本地视频新的渲染流程。
+ *                <p/>
+ * @return 0 代表方法调用成功，其他代表失败。<br/>
+ * -4 ：调用失败，在频道内调用无效。<br/>
+ */
+public abstract int enableVideoImproveModule(boolean enabled);
+
+```
+
+2.添加接口 **CreateRendererTextureView** 和  **CreateRendererSurfaceView** ，用于创建频本地视频新的渲染流程所用的视频控件。  
+
+```
+/**
+ * 创建视频控件
+ * <p/>
+ * 创建新的视频渲染控件，控件为 VideoRenderView 的类型，但属于 GLSurfaceView ，在添加到布局容器时进行强制转换即可；View 的生命周期由 App 管理，View 在 App 提供的布局容器上进行渲染。
+ *
+ * @param context 安卓活动 (Android Activity) 的上下文
+ *                <p/>
+ * @return VideoRenderView
+ */
+public static VideoRenderView CreateRendererSurfaceView(Context context) {
+    return new TTTSurfaceView(context);
+}
+
+/**
+ * 创建视频控件
+ * <p/>
+ * 创建新的视频渲染控件，控件为 VideoRenderView 的类型，但属于 TextureView ，在添加到布局容器时进行强制转换即可；View 的生命周期由 App 管理，View 在 App 提供的布局容器上进行渲染。
+ *
+ * @param context 安卓活动 (Android Activity) 的上下文
+ *                <p/>
+ * @return VideoRenderView
+ */
+public static VideoRenderView CreateRendererTextureView(Context context) {
+    return new TTTextureView(context);
+}
+```
+
+**新的视频渲染流程代码使用示例**
+
+```
+private TTTRtcEngine mTTTEngine;
+private WaterMarkPosition mWaterMarkPosition;
+private ViewGroup mParentLayout;
+...
+
+// 启用本地视频新的渲染流程，默认就是true，这里只是演示调用。
+mTTTEngine.getTTTRtcEngineExtend().enableVideoImproveModule(true);
+...
+
+// 加入频道。
+mTTTEngine.joinChannel(...);
+...
+
+// 打开本地视频。
+VideoRenderView videoRenderView = TTTRtcEngine.CreateRendererSurfaceView(this);
+mTTTEngine.setupLocalVideo(new VideoCanvas(0, Constants.RENDER_MODE_HIDDEN, videoRenderView, mWaterMarkPosition),this.getRequestedOrientation());
+SurfaceView view = (SurfaceView) videoRenderView;
+mParentLayout.addView(view);
+
+...
+```
+
+3.调整视频 720p 和 1080p 档位的帧率和码率参数。  
+4.直播模式下，添加新的错误码。
+
+```
+/**
+ * 直播模式下，主播长时间(默认100秒)无音频或视频上行，推流失败。
+ */
+public static final int ERROR_RTC_PUSH_ERROR = 110;
+```
 
 ```
 /**
