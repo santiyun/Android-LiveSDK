@@ -108,13 +108,6 @@ mParentLayout.addView(view);
 public static final int ERROR_RTC_PUSH_ERROR = 110;
 ```
 
-```
-/**
- * 直播模式下，主播长时间(默认100秒)无音频或视频上行，推流失败。
- */
-public static final int ERROR_RTC_PUSH_ERROR = 110;
-```
-
 ### 2.9.7版本
 该版本于 2020.06.09 发布。
 
