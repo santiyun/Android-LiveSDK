@@ -18,12 +18,20 @@
 
 ## 三体音视频 SDK 发版说明
 
+### 3.0.6版本
+该版本于 2020.08.04 发布。
+
+1. 修复外部音频源接口一个关于采样率的问题。
+2. 修复直推功能码率调整过慢的一个问题。
+3. 调整 **CreateRendererSurfaceView** 和 **CreateRendererTextureView** 接口，返回值得到的是 SurfaceView 或 TextureView，不再是VideoRenderView 类型。
+4. 优化 **setupLocalVideo** 接口执行流程，传递本地视频渲染控件，不需要再强转**VideoRenderView**类型，并适配横竖屏切换。
+
 ### 3.0.4版本
 该版本于 2020.07.02 发布。  
 
-1.调整外部视频源功能与SDK视频源之间启用关系。  
-2.调整 **setupLocalVideo** 接口的逻辑，优化使用新的渲染流程时控件参数传递的类型。  
-3.调整 **enableVideoImproveModule** 接口的定义位置，从 **TTTRtcEngineExtend** 转移到 **TTTRtcEngine** 类中，方便调用。
+1. 调 整外部视频源功能与SDK视频源之间启用关系。  
+2. 调整 **setupLocalVideo** 接口的逻辑，优化使用新的渲染流程时控件参数传递的类型。  
+3. 调整 **enableVideoImproveModule** 接口的定义位置，从 **TTTRtcEngineExtend** 转移到 **TTTRtcEngine** 类中，方便调用。
 
 ### 3.0.3版本
 该版本于 2020.06.20 发布。
